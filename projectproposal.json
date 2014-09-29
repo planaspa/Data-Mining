@@ -1,0 +1,17 @@
+{
+"title": "Beer tweeting",
+"members": [ 
+{ "name": "Pablo Lanaspa Ferrer", 
+"study_number": "s141844"
+}, 
+{ "name": "Mia Louise Søgaard", 
+"study_number": "s100524"
+}, 
+{ "name": "Pablo Spiegelberg Ramirez",
+"study_number": "s142517"
+}
+],
+"git": "git@github.com:planaspa/Data-Mining.git", 
+"description": "This project will involve crawling, downloading and extraction of tweets from Twitter which contains the word or hashtag Beer, in order to find which topics or words are correlated between all of these tweets all around the globe.",
+"modules": ["twitter", "json"]
+}
