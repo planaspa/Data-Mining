@@ -71,3 +71,12 @@ conn.execute('''CREATE TABLE MENTIONS
         PRIMARY KEY (ID_USER, ID_TWEET));''')
 
 if verbose : print "Table Mentions created successfully"
+
+# Creating indexes
+# Index to search easily by geo-position
+conn.execute("CREATE INDEX GEO ON TWEETS(LAT, LONG);")
+
+if verbose : print "Index GEO created successfully"
+
+# Closing the connection
+conn.close()
