@@ -40,7 +40,7 @@ if verbose:
 
 # Creating tables for multivaluated attributes for some tables
 conn.execute('''CREATE TABLE HASHTAGS
-    (HASHTAG TEXT NOT NULL,
+    (HASHTAG TEXT NOT NULL COLLATE NOCASE,
     ID INT NOT NULL,
     FOREIGN KEY (ID) REFERENCES TWEETS(ID),
     PRIMARY KEY (HASHTAG, ID));''')
@@ -56,6 +56,15 @@ conn.execute('''CREATE TABLE URLS
 
 if verbose:
     print "Table Hashtags created successfully"
+
+conn.execute('''CREATE TABLE WORDS
+    (WORD TEXT NOT NULL COLLATE NOCASE,
+    ID INT NOT NULL,
+    FOREIGN KEY (ID) REFERENCES TWEETS(ID),
+    PRIMARY KEY (WORD, ID));''')
+
+if verbose:
+    print "Table Words created successfully"
 
 # Creating tables for relations between main tables
 # PRODUCES --> A user produces many tweets

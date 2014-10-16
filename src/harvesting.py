@@ -1,4 +1,5 @@
 from twython import TwythonStreamer
+from string import punctuation
 import keys
 import sqlite3
 import sys
@@ -20,120 +21,39 @@ class MyStreamer(TwythonStreamer):
 
         # We only take tweets that are in English
         if data['lang'] == 'en':
-            # Inserting into Tweets Table depending on whether the coordinates
-            # exist or not
-            if data['coordinates'] is None:
-                conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS) "
-                             "VALUES (%i, '%s', %i, %i);"
-                             % (data['id'], data['text'].replace("'", "''"),
-                                data['favorite_count'], data['retweet_count']))
-                conn.commit()
-
-            else:
-                if data['coordinates']['type'] == 'Point':
-                    conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS"
-                                 ", LAT, LONG) VALUES(%i, '%s',%i, %i,%f, %f);"
-                                 % (data['id'],
-                                    data['text'].replace("'", "''"),
-                                    data['favorite_count'],
-                                    data['retweet_count'],
-                                    data['coordinates']['coordinates'][1],
-                                    data['coordinates']['coordinates'][0]))
-                    conn.commit()
+            # Inserting into Tweets Table
+            self.insert_Tweet(data)
 
             # Inserting into Users Table
-            if data['user']['verified'] == "True":
-                verified = 1
-            else:
-                verified = 0
-
-            # We have to see whether the user has already been stored or not
-            cursor.execute("SELECT COUNT(*) FROM USERS WHERE ID=%s;"
-                           % data['user']['id'])
-            result = cursor.fetchone()
-            if result[0] == 0:
-                conn.execute("INSERT INTO USERS(ID, NAME, SCREEN_NAME, "
-                             "VERIFIED, LANG) VALUES (%i, '%s', '%s', %i, "
-                             "'%s');"
-                             % (data['user']['id'],
-                                data['user']['name'].replace("'", "''"),
-                                data['user']['screen_name'].replace("'", "''"),
-                                verified, data['user']['lang']))
-            conn.commit()
+            self.insert_User(data, cursor)
 
             # Inserting into Produces Table
-            conn.execute("INSERT INTO PRODUCES(ID_TWEET, ID_USER) "
-                         "VALUES (%i, %i);" % (data['id'], data['user']['id']))
-            conn.commit()
+            self.insert_Productions(data)
 
             # Inserting into Mentions Table
-            for user in data['entities']['user_mentions']:
-                try:
-                    conn.execute("INSERT INTO MENTIONS (ID_TWEET, ID_USER) "
-                                 "VALUES (%i, %i);" % (data['id'], user['id']))
-                    conn.commit()
-                except sqlite3.IntegrityError:
-                    # The exception may be caused because the same tweet
-                    # mentions twice or more times a single user, we are going
-                    # to check it. If it happens we just ignore it, otherwise
-                    # not.
-                    cursor.execute("SELECT COUNT(*) FROM MENTIONS WHERE "
-                                   "ID_TWEET=%i AND ID_USER=%i;" %
-                                   (data['id'], user['id']))
-                    result = cursor.fetchone()
-                    if result[0] > 0:
-                        pass
-                    else:
-                        print "*** Error was caused by the following tweet ***"
-                        print data
-                        break
+            self.insert_Mentions(data)
 
             # Inserting into Hashtags Table
-            for hashtag in data['entities']['hashtags']:
-                try:
-                    conn.execute("INSERT INTO HASHTAGS (ID, HASHTAG) "
-                                 "VALUES (%i, '#%s');" %
-                                 (data['id'], hashtag['text']))
-                    conn.commit()
-                except sqlite3.IntegrityError:
-                    # The exception may be caused because the same tweet has
-                    # the same hashtag twice or more times, we are going to
-                    # check it. If it happens we just ignore it, otherwise not.
-                    cursor.execute("SELECT COUNT(*) FROM HASHTAGS WHERE ID=%i "
-                                   "AND HASHTAG='%s';" %
-                                   (data['id'], hashtag['text']))
-                    result = cursor.fetchone()
-                    if result[0] > 0:
-                        pass
-                    else:
-                        print "*** Error was caused by the following tweet ***"
-                        print data
-                        break
+            self.insert_Hashtags(data)
 
             # Inserting into URLs Table
-            for url in data['entities']['urls']:
-                try:
-                    conn.execute("INSERT INTO URLS (ID, URL) VALUES (%i,'%s');"
-                                 % (data['id'], url['expanded_url']))
-                    conn.commit()
-                except sqlite3.IntegrityError:
-                    # The exception may be caused because the same tweet has
-                    # the same URL twice or more times, we are going to check
-                    # it. If it happens we just ignore it, otherwise not.
-                    cursor.execute("SELECT COUNT(*) FROM URLS WHERE ID=%i "
-                                   "AND URL='%s';" %
-                                   (data['id'], url['expanded_url']))
-                    result = cursor.fetchone()
-                    if result[0] > 0:
-                        pass
-                    else:
-                        print "*** Error was caused by the following tweet ***"
-                        print data
-                        break
+            self.insert_URLs(data)
+
+            # Inserting appropiate words into Words Table
+            self.insert_Words(data)
+
+            # We commit when everything has gone OK. If there is some kind
+            # of error with the insertion the whole tweet insertion is
+            # rolled back.
+            conn.commit()
 
             # We show the count
             successful_tweets += 1
             print "%i tweets inserted succesfully." % successful_tweets
+
+            if verbose:
+                print data['user']['screen_name']
+                print data['text']
 
     def on_error(self, status_code, data):
         print status_code
@@ -144,6 +64,112 @@ class MyStreamer(TwythonStreamer):
 
     def on_timeout():
         print '*** ERROR ***: The request has timed out.'
+
+    def insert_Tweet(self, data):
+        # Inserting into Tweets Table depending on whether the coordinates
+        # exist or not
+        if data['coordinates'] is None:
+            conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS) "
+                         "VALUES (%i, '%s', %i, %i);"
+                         % (data['id'], data['text'].replace("'", "''"),
+                            data['favorite_count'], data['retweet_count']))
+
+        else:
+            if data['coordinates']['type'] == 'Point':
+                conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS"
+                             ", LAT, LONG) VALUES(%i, '%s',%i, %i,%f, %f);"
+                             % (data['id'],
+                                data['text'].replace("'", "''"),
+                                data['favorite_count'],
+                                data['retweet_count'],
+                                data['coordinates']['coordinates'][1],
+                                data['coordinates']['coordinates'][0]))
+
+    def insert_User(self, data, cursor):
+        # As SQLite3 don't have a boolean defined type we have to use ints
+        if data['user']['verified'] == "True":
+            verified = 1
+        else:
+            verified = 0
+
+        # We have to see whether the user has already been stored or not
+        cursor.execute("SELECT COUNT(*) FROM USERS WHERE ID=%s;"
+                       % data['user']['id'])
+        result = cursor.fetchone()
+        if result[0] == 0:
+            conn.execute("INSERT INTO USERS(ID, NAME, SCREEN_NAME, "
+                         "VERIFIED, LANG) VALUES (%i, '%s', '%s', %i, "
+                         "'%s');"
+                         % (data['user']['id'],
+                            data['user']['name'].replace("'", "''"),
+                            data['user']['screen_name'].replace("'", "''"),
+                            verified, data['user']['lang']))
+
+    def insert_Productions(self, data):
+        conn.execute("INSERT INTO PRODUCES(ID_TWEET, ID_USER) "
+                     "VALUES (%i, %i);" % (data['id'], data['user']['id']))
+
+    def insert_Mentions(self, data):
+        # We avoid repeated mentions
+        mentions = []
+        for mention in data['entities']['user_mentions']:
+            if mention['id'] not in mentions:
+                mentions.append(mention['id'])
+
+        for user in mentions:
+            conn.execute("INSERT INTO MENTIONS (ID_TWEET, ID_USER) "
+                         "VALUES (%i, %i);" % (data['id'], user))
+
+    def insert_Hashtags(self, data):
+        # We avoid repeated hashtags
+        hashtags = []
+        for hashtag in data['entities']['hashtags']:
+            if hashtag['text'].lower() not in hashtags:
+                hashtags.append(hashtag['text'])
+
+        for hashtag in hashtags:
+            conn.execute("INSERT INTO HASHTAGS (ID, HASHTAG) "
+                         "VALUES (%i, '#%s');" %
+                         (data['id'], hashtag))
+
+    def insert_URLs(self, data):
+        # We avoid repeated URLs
+        urls = []
+        for url in data['entities']['urls']:
+            if url['expanded_url'] not in urls:
+                urls.append(url['expanded_url'])
+
+        for url in urls:
+            conn.execute("INSERT INTO URLS (ID, URL) VALUES (%i,'%s');"
+                         % (data['id'], url))
+
+    def insert_Words(self, data):
+        # Ignores punctuation
+        text = ' '.join(word.strip(punctuation)
+                        for word in data['text'].split()
+                        if word.strip(punctuation))
+
+        # Compute a collection of all words from the tweet in lowercase
+        words = [w.replace("'", "''").lower() for w in text.split()]
+
+        # We avoid inserting words that are irrelevant
+        junkWords = [u'rt', u'a', u'the', u'an', u'this', u'that', u'these',
+                     u'those']
+
+        for item in words:
+            if item in junkWords:
+                words.remove(item)
+
+        # We avoid inserting repeated words in the same tweet
+        insertion_words = []
+        for word in words:
+            if word not in insertion_words:
+                insertion_words.append(word)
+
+        # We insert the words into the database
+        for word in insertion_words:
+            conn.execute("INSERT INTO WORDS (ID, WORD) VALUES (%i,'%s');"
+                         % (data['id'], word))
 
 # Verbose mode activation
 if "-v" in sys.argv:
