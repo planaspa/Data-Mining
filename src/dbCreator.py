@@ -22,7 +22,8 @@ conn.execute('''CREATE TABLE TWEETS
     FAVS INT NOT NULL,
     RTS INT NOT NULL,
     LAT REAL,
-    LONG REAL);''')
+    LONG REAL,
+    FOLLOWERS INT);''')
 
 if verbose:
     print "Table Tweets created successfully"

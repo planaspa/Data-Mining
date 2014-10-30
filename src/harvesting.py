@@ -42,6 +42,9 @@ class MyStreamer(TwythonStreamer):
             # Inserting appropiate words into Words Table
             self.insert_Words(data)
 
+            # Updating the original tweet if it is a retweet
+            self.update_Retweet(data)
+
             # We commit when everything has gone OK. If there is some kind
             # of error with the insertion the whole tweet insertion is
             # rolled back.
@@ -69,21 +72,24 @@ class MyStreamer(TwythonStreamer):
         # Inserting into Tweets Table depending on whether the coordinates
         # exist or not
         if data['coordinates'] is None:
-            conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS) "
-                         "VALUES (%i, '%s', %i, %i);"
+            conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS, "
+                         "FOLLOWERS) VALUES (%i, '%s', %i, %i, %i);"
                          % (data['id'], data['text'].replace("'", "''"),
-                            data['favorite_count'], data['retweet_count']))
+                            data['favorite_count'], data['retweet_count'],
+                            data['user']['followers_count']))
 
         else:
             if data['coordinates']['type'] == 'Point':
                 conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS"
-                             ", LAT, LONG) VALUES(%i, '%s',%i, %i,%f, %f);"
+                             ", LAT, LONG, FOLLOWERS) "
+                             "VALUES(%i, '%s',%i, %i,%f, %f, %i);"
                              % (data['id'],
                                 data['text'].replace("'", "''"),
                                 data['favorite_count'],
                                 data['retweet_count'],
                                 data['coordinates']['coordinates'][1],
-                                data['coordinates']['coordinates'][0]))
+                                data['coordinates']['coordinates'][0],
+                                data['user']['followers_count']))
 
     def insert_User(self, data, cursor):
         # As SQLite3 don't have a boolean defined type we have to use ints
@@ -170,6 +176,17 @@ class MyStreamer(TwythonStreamer):
         for word in insertion_words:
             conn.execute("INSERT INTO WORDS (ID, WORD) VALUES (%i,'%s');"
                          % (data['id'], word))
+
+    def update_Retweet (self, data):
+        # If the tweet was retweeted we update the stats of the original
+        # tweet
+        if data['retweeted_status']['id'] is not None:
+            conn.execute ("UPDATE TWEETS "
+                          "SET RTS = %i , FAVS = %i "
+                          "WHERE ID = %i;"
+                          % (data['retweeted_status']['retweet_count'],
+                             data['retweeted_status']['favorite_count'],
+                             data['retweeted_status']['id'])
 
 # Verbose mode activation
 if "-v" in sys.argv:
