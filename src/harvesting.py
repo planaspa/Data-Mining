@@ -45,6 +45,9 @@ class MyStreamer(TwythonStreamer):
             # Updating the original tweet if it is a retweet
             self.update_Retweet(data)
 
+            # Inserting the timing of the tweet
+            self.insert_Time(data)
+
             # We commit when everything has gone OK. If there is some kind
             # of error with the insertion the whole tweet insertion is
             # rolled back.
@@ -180,13 +183,39 @@ class MyStreamer(TwythonStreamer):
     def update_Retweet (self, data):
         # If the tweet was retweeted we update the stats of the original
         # tweet
-        if data['retweeted_status']['id'] is not None:
+        if 'retweeted_status' in data:
             conn.execute ("UPDATE TWEETS "
                           "SET RTS = %i , FAVS = %i "
                           "WHERE ID = %i;"
                           % (data['retweeted_status']['retweet_count'],
                              data['retweeted_status']['favorite_count'],
-                             data['retweeted_status']['id'])
+                             data['retweeted_status']['id']))
+
+    def extract_Time (self, data):
+        # In this method we just split the data we want in a list
+        info = {'id' : data['id']}
+        date = data ['created_at'].split()
+        info ['dotw'] = date [0]
+        info ['month'] = date [1]
+        info ['day'] = int(date [2])
+        # Special split for time hh:mm:ss
+        hour = date [3].split(':')
+        info ['hour'] = int(hour[0])
+        info ['min'] = int(hour[1])
+        info ['sec'] = int(hour[2])
+        return info
+
+    def insert_Time(self, data):
+        # We divide the data we are looking for in different fields in
+        # an array and then we insert them into the database
+        info = self.extract_Time(data)
+        conn.execute ("INSERT INTO TIME (ID_TWEET, DAY_OF_THE_WEEK, "
+                      "DAY, MONTH, HOUR, MINUTE, SECOND) VALUES ( "
+                      "%i, '%s', %i, '%s', %i, %i, %i);"
+                      % (info ['id'], info ['dotw'], info ['day'],
+                         info ['month'], info ['hour'], info ['min'],
+                         info ['sec']))      
+        
 
 # Verbose mode activation
 if "-v" in sys.argv:

@@ -39,6 +39,20 @@ conn.execute('''CREATE TABLE USERS
 if verbose:
     print "Table Users created successfully"
 
+# Table for tweets timing
+conn.execute('''CREATE TABLE TIME
+    (ID_TWEET INT PRIMARY KEY NOT NULL,
+    DAY_OF_THE_WEEK TEXT NOT NULL,
+    DAY INT NOT NULL,
+    MONTH TEXT NOT NULL,
+    HOUR INT NOT NULL,
+    MINUTE INT NOT NULL,
+    SECOND INT NOT NULL,
+    FOREIGN KEY (ID_TWEET) REFERENCES TWEETS(ID));''')
+
+if verbose:
+    print "Table Time created successfully"
+
 # Creating tables for multivaluated attributes for some tables
 conn.execute('''CREATE TABLE HASHTAGS
     (HASHTAG TEXT NOT NULL COLLATE NOCASE,
