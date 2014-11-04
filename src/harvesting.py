@@ -71,13 +71,20 @@ class MyStreamer(TwythonStreamer):
     def on_timeout():
         print '*** ERROR ***: The request has timed out.'
 
+    def text_format(self, text):
+        text = text.replace("&amp;","&")
+        text = text.replace("&gt;",">")
+        text = text.replace("&lt;","<")
+        text = text.replace("\'", "\'\'")
+        return text
+
     def insert_Tweet(self, data):
         # Inserting into Tweets Table depending on whether the coordinates
         # exist or not
         if data['coordinates'] is None:
             conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS, "
                          "FOLLOWERS) VALUES (%i, '%s', %i, %i, %i);"
-                         % (data['id'], data['text'].replace("'", "''"),
+                         % (data['id'], self.text_format(data['text']),
                             data['favorite_count'], data['retweet_count'],
                             data['user']['followers_count']))
 
@@ -86,8 +93,7 @@ class MyStreamer(TwythonStreamer):
                 conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS"
                              ", LAT, LONG, FOLLOWERS) "
                              "VALUES(%i, '%s',%i, %i,%f, %f, %i);"
-                             % (data['id'],
-                                data['text'].replace("'", "''"),
+                             % (data['id'],self.text_format(data['text']),
                                 data['favorite_count'],
                                 data['retweet_count'],
                                 data['coordinates']['coordinates'][1],
@@ -110,8 +116,8 @@ class MyStreamer(TwythonStreamer):
                          "VERIFIED, LANG) VALUES (%i, '%s', '%s', %i, "
                          "'%s');"
                          % (data['user']['id'],
-                            data['user']['name'].replace("'", "''"),
-                            data['user']['screen_name'].replace("'", "''"),
+                            self.text_format(data['user']['name']),
+                            self.text_format(data['user']['screen_name']),
                             verified, data['user']['lang']))
 
     def insert_Productions(self, data):
@@ -159,7 +165,7 @@ class MyStreamer(TwythonStreamer):
                         if word.strip(punctuation))
 
         # Compute a collection of all words from the tweet in lowercase
-        words = [w.replace("'", "''").lower() for w in text.split()]
+        words = [self.text_format(w).lower() for w in text.split()]
 
         # We avoid inserting words that are irrelevant
         junkWords = [u'rt', u'a', u'the', u'an', u'this', u'that', u'these',
@@ -180,42 +186,41 @@ class MyStreamer(TwythonStreamer):
             conn.execute("INSERT INTO WORDS (ID, WORD) VALUES (%i,'%s');"
                          % (data['id'], word))
 
-    def update_Retweet (self, data):
+    def update_Retweet(self, data):
         # If the tweet was retweeted we update the stats of the original
         # tweet
         if 'retweeted_status' in data:
-            conn.execute ("UPDATE TWEETS "
-                          "SET RTS = %i , FAVS = %i "
-                          "WHERE ID = %i;"
-                          % (data['retweeted_status']['retweet_count'],
-                             data['retweeted_status']['favorite_count'],
-                             data['retweeted_status']['id']))
+            conn.execute("UPDATE TWEETS "
+                         "SET RTS = %i , FAVS = %i "
+                         "WHERE ID = %i;"
+                         % (data['retweeted_status']['retweet_count'],
+                            data['retweeted_status']['favorite_count'],
+                            data['retweeted_status']['id']))
 
-    def extract_Time (self, data):
+    def extract_Time(self, data):
         # In this method we just split the data we want in a list
-        info = {'id' : data['id']}
-        date = data ['created_at'].split()
-        info ['dotw'] = date [0]
-        info ['month'] = date [1]
-        info ['day'] = int(date [2])
+        info = {'id': data['id']}
+        date = data['created_at'].split()
+        info['dotw'] = date[0]
+        info['month'] = date[1]
+        info['day'] = int(date[2])
         # Special split for time hh:mm:ss
-        hour = date [3].split(':')
-        info ['hour'] = int(hour[0])
-        info ['min'] = int(hour[1])
-        info ['sec'] = int(hour[2])
+        hour = date[3].split(':')
+        info['hour'] = int(hour[0])
+        info['min'] = int(hour[1])
+        info['sec'] = int(hour[2])
         return info
 
     def insert_Time(self, data):
         # We divide the data we are looking for in different fields in
         # an array and then we insert them into the database
         info = self.extract_Time(data)
-        conn.execute ("INSERT INTO TIME (ID_TWEET, DAY_OF_THE_WEEK, "
-                      "DAY, MONTH, HOUR, MINUTE, SECOND) VALUES ( "
-                      "%i, '%s', %i, '%s', %i, %i, %i);"
-                      % (info ['id'], info ['dotw'], info ['day'],
-                         info ['month'], info ['hour'], info ['min'],
-                         info ['sec']))      
-        
+        conn.execute("INSERT INTO TIME (ID_TWEET, DAY_OF_THE_WEEK, "
+                     "DAY, MONTH, HOUR, MINUTE, SECOND) VALUES ( "
+                     "%i, '%s', %i, '%s', %i, %i, %i);"
+                     % (info['id'], info['dotw'], info['day'],
+                        info['month'], info['hour'], info['min'],
+                        info['sec']))
 
 # Verbose mode activation
 if "-v" in sys.argv:
@@ -227,7 +232,7 @@ else:
 
 
 # Connection to DataBase
-conn = sqlite3.connect('../db/tweetBank.db')
+conn = sqlite3.connect('db/tweetBank.db')
 if verbose:
     print "Opened database successfully"
 

@@ -11,7 +11,7 @@ else:
 
 
 # Connection to DataBase
-conn = sqlite3.connect('../db/tweetBank.db')
+conn = sqlite3.connect('db/tweetBank.db')
 if verbose:
     print "Opened database successfully"
 
