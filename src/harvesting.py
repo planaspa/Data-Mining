@@ -72,10 +72,10 @@ class MyStreamer(TwythonStreamer):
         print '*** ERROR ***: The request has timed out.'
 
     def text_format(self, text):
-        text = text.replace("&amp;","&")
-        text = text.replace("&gt;",">")
-        text = text.replace("&lt;","<")
-        text = text.replace("\'", "\'\'")
+        text = text.replace("&amp;", "&")
+        text = text.replace("&gt;", ">")
+        text = text.replace("&lt;", "<")
+        text = text.replace("\'",  "\'\'")
         return text
 
     def insert_Tweet(self, data):
@@ -93,7 +93,7 @@ class MyStreamer(TwythonStreamer):
                 conn.execute("INSERT INTO TWEETS(ID, TWEET_TEXT, FAVS, RTS"
                              ", LAT, LONG, FOLLOWERS) "
                              "VALUES(%i, '%s',%i, %i,%f, %f, %i);"
-                             % (data['id'],self.text_format(data['text']),
+                             % (data['id'], self.text_format(data['text']),
                                 data['favorite_count'],
                                 data['retweet_count'],
                                 data['coordinates']['coordinates'][1],
@@ -127,9 +127,9 @@ class MyStreamer(TwythonStreamer):
     def insert_Mentions(self, data):
         # We avoid repeated mentions
         mentions = []
-        for mention in data['entities']['user_mentions']:
-            if mention['id'] not in mentions:
-                mentions.append(mention['id'])
+        [mentions.append(mention['id'])
+         for mention in data['entities']['user_mentions'] 
+         if mention['id'] not in mentions]
 
         for user in mentions:
             conn.execute("INSERT INTO MENTIONS (ID_TWEET, ID_USER) "
@@ -137,10 +137,10 @@ class MyStreamer(TwythonStreamer):
 
     def insert_Hashtags(self, data):
         # We avoid repeated hashtags
-        hashtags = []
-        for hashtag in data['entities']['hashtags']:
-            if hashtag['text'].lower() not in hashtags:
-                hashtags.append(hashtag['text'])
+        hashtags =[]
+        [hashtags.append(hashtag['text'].lower())
+         for hashtag in data['entities']['hashtags']
+         if hashtag['text'].lower() not in hashtags]
 
         for hashtag in hashtags:
             conn.execute("INSERT INTO HASHTAGS (ID, HASHTAG) "
@@ -150,9 +150,9 @@ class MyStreamer(TwythonStreamer):
     def insert_URLs(self, data):
         # We avoid repeated URLs
         urls = []
-        for url in data['entities']['urls']:
-            if url['expanded_url'] not in urls:
-                urls.append(url['expanded_url'])
+        [urls.append(url['expanded_url'])
+         for url in data['entities']['urls']
+         if url['expanded_url'] not in urls]
 
         for url in urls:
             conn.execute("INSERT INTO URLS (ID, URL) VALUES (%i,'%s');"
@@ -164,22 +164,18 @@ class MyStreamer(TwythonStreamer):
                         for word in data['text'].split()
                         if word.strip(punctuation))
 
-        # Compute a collection of all words from the tweet in lowercase
-        words = [self.text_format(w).lower() for w in text.split()]
-
         # We avoid inserting words that are irrelevant
         junkWords = [u'rt', u'a', u'the', u'an', u'this', u'that', u'these',
                      u'those']
 
-        for item in words:
-            if item in junkWords:
-                words.remove(item)
+        # Compute a collection of all words from the tweet in lowercase
+        words = [self.text_format(w).lower()
+                 for w in text.split() if w.lower() not in junkWords]
 
         # We avoid inserting repeated words in the same tweet
         insertion_words = []
-        for word in words:
-            if word not in insertion_words:
-                insertion_words.append(word)
+        [insertion_words.append(word) for word in words
+         if word not in insertion_words]
 
         # We insert the words into the database
         for word in insertion_words:
