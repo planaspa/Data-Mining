@@ -2,6 +2,7 @@ from collections import defaultdict
 import sqlite3
 import networkx as nx
 import matplotlib.pyplot as plt
+import sys
 
 def text_format(text):
     text = text.replace("&amp;","&")
@@ -28,6 +29,16 @@ def create_position (matrix, wordA, wordB):
     matrix [wordA] [wordB] = 0
     return [wordA, wordB]
     
+def bound (): 
+    c.execute("SELECT count(*) FROM TWEETS")
+    result = c.fetchone()
+    tweets = result[0]
+    return tweets * float(sys.argv[1])
+
+if sys.argv[1] is None:
+    print "I need a percentage (number between 0 and 1) as an argument"
+    sys.exit()
+    
 
 conn = sqlite3.connect('db/tweetBank.db')
 
@@ -38,6 +49,8 @@ word_matrix = defaultdict(dict)
 
 c.execute("SELECT ID FROM TWEETS")
 tweet_list = [record[0] for record in c.fetchall()]
+
+print "Reading from the database..."
 
 for tweet in tweet_list:
     c.execute ("SELECT WORD FROM WORDS WHERE ID =%i"
@@ -52,15 +65,14 @@ for tweet in tweet_list:
                 correct_positions = create_position (word_matrix, word, rest_of_the_words)
             word_matrix [correct_positions[0]] [correct_positions[1]] += 1
 
-# Closing the connection
-conn.close()
+print "Creating the graph..."
 
 graph = nx.Graph()
 edge_labels = {}
 
 for word in word_matrix:
     for other_word in word_matrix[word]:
-        if word_matrix[word][other_word] > 20:
+        if word_matrix[word][other_word] > bound():
             graph.add_edge(word,other_word)
             graph.node[other_word]['word']=other_word
             edge_labels [(word,other_word)] = word_matrix[word][other_word]
@@ -69,6 +81,9 @@ for word in word_matrix:
         graph.node[word]['word']=word
     except:
         pass
+
+# Closing the connection
+conn.close()
 
 pos=nx.spring_layout(graph)
 

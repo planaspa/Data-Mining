@@ -166,11 +166,16 @@ class MyStreamer(TwythonStreamer):
 
         # We avoid inserting words that are irrelevant
         junkWords = [u'rt', u'a', u'the', u'an', u'this', u'that', u'these',
-                     u'those']
+                     u'those', u'on', u'at', u'of', u'for', u'in', u'with',
+                     u'to', u'by']
+
+        # We want to avoid mixing urls with words
+        urls = [url['url'] for url in data['entities']['urls']]
 
         # Compute a collection of all words from the tweet in lowercase
         words = [self.text_format(w).lower()
-                 for w in text.split() if w.lower() not in junkWords]
+                 for w in text.split() if w.lower() not in junkWords 
+                 and w not in urls]
 
         # We avoid inserting repeated words in the same tweet
         insertion_words = []
