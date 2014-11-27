@@ -21,6 +21,9 @@ cursor = list(c)
 lats  = [record[0] for record in cursor]
 longs = [record[1] for record in cursor]
 
+# Closing the connection
+conn.close()
+
 print("Generating map...")
 
 """

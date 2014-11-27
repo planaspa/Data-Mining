@@ -35,7 +35,7 @@ def bound ():
     tweets = result[0]
     return tweets * float(sys.argv[1])
 
-if sys.argv[1] is None:
+if len(sys.argv) != 2:
     print "I need a percentage (number between 0 and 1) as an argument"
     sys.exit()
     
@@ -47,11 +47,18 @@ c = conn.cursor()
 # Creation of the matrix
 word_matrix = defaultdict(dict)
 
-c.execute("SELECT ID FROM TWEETS")
+print "Reading tweets from the database..."
+
+# We select all the tweets with word repetition above the bound in the db
+c.execute("SELECT DISTINCT(ID) FROM WORDS WHERE WORD IN ("+
+          "SELECT WORD FROM (SELECT WORD, COUNT(*) AS TOTAL FROM WORDS " +
+          "GROUP BY WORD HAVING TOTAL > " + str(bound())+ "))");
 tweet_list = [record[0] for record in c.fetchall()]
 
-print "Reading from the database..."
+print "Reading words from the database..."
 
+# For each tweet we see the word that it contains, and we match them
+# in the matrix
 for tweet in tweet_list:
     c.execute ("SELECT WORD FROM WORDS WHERE ID =%i"
                % (tweet))
@@ -60,8 +67,10 @@ for tweet in tweet_list:
     for word in words:
         words.remove(word)
         for rest_of_the_words in words:
+            # We find the correct position for the word in the matrix
             correct_positions = correct_position (word_matrix, word, rest_of_the_words)
             if correct_positions is None:
+                # If the words are not in the matrix yet, we add them
                 correct_positions = create_position (word_matrix, word, rest_of_the_words)
             word_matrix [correct_positions[0]] [correct_positions[1]] += 1
 
