@@ -13,10 +13,11 @@ def test_tweetsTableCreator():
             "WHERE type = 'table' and name = 'TWEETS'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
+
 
 def test_usersTableCreator():
     conn = sqlite3.connect(db)
@@ -27,10 +28,11 @@ def test_usersTableCreator():
             "WHERE type = 'table' and name = 'USERS'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
+
 
 def test_timeTableCreator():
     conn = sqlite3.connect(db)
@@ -41,10 +43,11 @@ def test_timeTableCreator():
             "WHERE type = 'table' and name = 'TIME'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
+
 
 def test_hashtagsTableCreator():
     conn = sqlite3.connect(db)
@@ -55,10 +58,11 @@ def test_hashtagsTableCreator():
             "WHERE type = 'table' and name = 'HASHTAGS'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
+
 
 def test_urlsTableCreator():
     conn = sqlite3.connect(db)
@@ -69,10 +73,11 @@ def test_urlsTableCreator():
             "WHERE type = 'table' and name = 'URLS'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
+
 
 def test_wordTableCreator():
     conn = sqlite3.connect(db)
@@ -83,10 +88,11 @@ def test_wordTableCreator():
             "WHERE type = 'table' and name = 'WORDS'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
+
 
 def test_producesTableCreator():
     conn = sqlite3.connect(db)
@@ -97,10 +103,10 @@ def test_producesTableCreator():
             "WHERE type = 'table' and name = 'PRODUCES'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
 
 def test_mentionsTableCreator():
     conn = sqlite3.connect(db)
@@ -111,10 +117,10 @@ def test_mentionsTableCreator():
             "WHERE type = 'table' and name = 'MENTIONS'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
 
 def test_indexCreator():
     conn = sqlite3.connect(db)
@@ -125,16 +131,17 @@ def test_indexCreator():
             " WHERE type = 'index' and name = 'GEO'")
 
     result = c.fetchone()
-    assert result[0] == 1
 
     # Closing the connection
     conn.close()
+    assert result[0] == 1
 
-def test_removeDB():
+
+#def test_removeDB():
     """
     This method is not in the original module. But it is neccesary 
     if we want to remove the db for the followings tests.
     """
-    os.remove(db)
+ #   os.remove(db)
 
 
