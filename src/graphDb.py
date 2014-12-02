@@ -1,6 +1,7 @@
 import sqlite3
 import matplotlib.pyplot as plt
 import sys
+import os
 
 
 def text_format(text):
@@ -24,7 +25,7 @@ def creatingGroups(c, nGroups):
     result = c.fetchone()
     minFollowers = result[0]
 
-    groups = range(minFollowers, maxFollowers, maxFollowers/nGroups)
+    groups = range(minFollowers, maxFollowers, (maxFollowers-minFollowers)/nGroups)
     groups.append(maxFollowers)
     return groups
 
@@ -73,6 +74,7 @@ if __name__ == "__main__":
         print "I need a number of groups as an argument"
         sys.exit()
 
+    #filename = os.path.join('../db/tweetBank.db')
     conn = sqlite3.connect('db/tweetBank.db')
     c = conn.cursor()
 
