@@ -1,2 +1,9 @@
 src/keys.py
 src/keys.pyc
+*.pyc
+.cache
+.tox
+*.egg-info
+*.egg
+venv
+__pycache__
