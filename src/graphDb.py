@@ -71,22 +71,22 @@ def numberOfFavsPerGroup(c, groups):
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:
-        print "I need a number of groups as an argument"
+        print ("I need a number of groups as an argument")
         sys.exit()
 
     #filename = os.path.join('../db/tweetBank.db')
     conn = sqlite3.connect('db/tweetBank.db')
     c = conn.cursor()
 
-    print "Loading Groups..."
+    print ("Loading Groups...")
     groups= creatingGroups(c, int(sys.argv[1]))
-    print "Loading Tweets..."
+    print ("Loading Tweets...")
     tweets = numberOfTweetsPerGroup(c, groups)
-    print "Loading Retweets..."
+    print ("Loading Retweets...")
     rts = numberOfReTweetsPerGroup(c, groups)
-    print "Loading Favourites..."
+    print ("Loading Favourites...")
     favs = numberOfFavsPerGroup(c, groups)
-    print "Doing some calculations..."
+    print ("Doing some calculations...")
     rtsPerTweets = [float(rt)/tweet if tweet!=0 else 0 for rt, tweet in zip(rts, tweets)]
     favsPerTweets = [float(fav)/tweet if tweet!=0 else 0 for fav, tweet in zip(favs, tweets)]
 

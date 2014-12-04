@@ -15,7 +15,7 @@ def tweetsTableCreator(conn):
         FOLLOWERS INT);''')
 
     if verbose:
-        print "Table Tweets created successfully"
+        print ("Table Tweets created successfully")
 
 def usersTableCreator(conn):
     # If verified equals to one means it is true, zero means it is false
@@ -27,7 +27,7 @@ def usersTableCreator(conn):
         LANG TEXT);''')
 
     if verbose:
-        print "Table Users created successfully"
+        print ("Table Users created successfully")
 
 def timeTableCreator(conn):
     # Table for tweets timing
@@ -42,7 +42,7 @@ def timeTableCreator(conn):
         FOREIGN KEY (ID_TWEET) REFERENCES TWEETS(ID));''')
 
     if verbose:
-        print "Table Time created successfully"
+        print ("Table Time created successfully")
 
 def hashtagsTableCreator(conn):
     # Creating tables for multivaluated attributes for some tables
@@ -53,7 +53,7 @@ def hashtagsTableCreator(conn):
         PRIMARY KEY (HASHTAG, ID));''')
 
     if verbose:
-        print "Table Hashtags created successfully"
+        print ("Table Hashtags created successfully")
 
 def urlsTableCreator(conn):
     conn.execute('''CREATE TABLE URLS
@@ -63,7 +63,7 @@ def urlsTableCreator(conn):
         PRIMARY KEY (URL, ID));''')
 
     if verbose:
-        print "Table Hashtags created successfully"
+        print ("Table Hashtags created successfully")
 
 def wordTableCreator(conn):
     conn.execute('''CREATE TABLE WORDS
@@ -73,7 +73,7 @@ def wordTableCreator(conn):
         PRIMARY KEY (WORD, ID));''')
 
     if verbose:
-        print "Table Words created successfully"
+        print ("Table Words created successfully")
 
 def producesTableCreator(conn):
     # PRODUCES --> A user produces many tweets
@@ -85,7 +85,7 @@ def producesTableCreator(conn):
         PRIMARY KEY (ID_USER, ID_TWEET));''')
 
     if verbose:
-        print "Table Produces created successfully"
+        print ("Table Produces created successfully")
 
 def mentionsTableCreator(conn):
     # MENTIONS --> A tweet mentions many users
@@ -97,29 +97,29 @@ def mentionsTableCreator(conn):
         PRIMARY KEY (ID_USER, ID_TWEET));''')
 
     if verbose:
-        print "Table Mentions created successfully"
+        print ("Table Mentions created successfully")
 
 def indexCreator(conn):
     # Index to search easily by geo-position
     conn.execute("CREATE INDEX GEO ON TWEETS(LAT, LONG);")
 
     if verbose:
-        print "Index GEO created successfully"
+        print ("Index GEO created successfully")
 
 if __name__ == "__main__":
 
     # Verbose mode activation
     if "-v" in sys.argv:
         verbose = True
-        print "Verbose mode ON."
+        print ("Verbose mode ON.")
     else:
         verbose = False
-        print "Verbose mode OFF. To activate it use -v parametter when excecuting"
+        print ("Verbose mode OFF. To activate it use -v parametter when excecuting")
 
     # Connection to DataBase
     con = sqlite3.connect('db/tweetBank.db')
     if verbose:
-        print "Opened database successfully"
+        print ("Opened database successfully")
 
     # Creating main tables
     tweetsTableCreator(con)
@@ -136,4 +136,4 @@ if __name__ == "__main__":
     # Creating indexes
     indexCreator(con)
     # Closing the connection
-    conn.close()
+    con.close()

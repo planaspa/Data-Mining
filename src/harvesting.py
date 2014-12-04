@@ -36,8 +36,12 @@ class MyStreamer(TwythonStreamer):
             # Inserting into Hashtags Table
             self.insert_Hashtags(data)
 
-            # Inserting into URLs Table
-            self.insert_URLs(data)
+            try:
+                # Inserting into URLs Table
+                self.insert_URLs(data)
+            except:
+                # Sometimes strange symbols appear
+                pass
 
             # Inserting appropiate words into Words Table
             self.insert_Words(data)
@@ -223,24 +227,26 @@ class MyStreamer(TwythonStreamer):
                         info['month'], info['hour'], info['min'],
                         info['sec']))
 
-# Verbose mode activation
-if "-v" in sys.argv:
-    verbose = True
-    print "Verbose mode ON"
-else:
-    verbose = False
-    print "Verbose mode OFF. To activate it use -v parametter when excecuting"
+if __name__ == "__main__":
+
+    # Verbose mode activation
+    if "-v" in sys.argv:
+        verbose = True
+        print "Verbose mode ON"
+    else:
+        verbose = False
+        print "Verbose mode OFF. To activate it use -v parametter when excecuting"
 
 
-# Connection to DataBase
-conn = sqlite3.connect('db/tweetBank.db')
-if verbose:
-    print "Opened database successfully"
+    # Connection to DataBase
+    conn = sqlite3.connect('db/tweetBank.db')
+    if verbose:
+        print "Opened database successfully"
 
 
-stream = MyStreamer(keys.CONSUMER_KEY, keys.CONSUMER_SECRET,
-                    keys.OAUTH_TOKEN, keys.OAUTH_TOKEN_SECRET)
-keyword_list = 'beer'
-# Filter parameters can be found here:
-# https://dev.twitter.com/streaming/reference/post/statuses/filter
-stream.statuses.filter(track=keyword_list)
+    stream = MyStreamer(keys.CONSUMER_KEY, keys.CONSUMER_SECRET,
+                        keys.OAUTH_TOKEN, keys.OAUTH_TOKEN_SECRET)
+    keyword_list = 'beer'
+    # Filter parameters can be found here:
+    # https://dev.twitter.com/streaming/reference/post/statuses/filter
+    stream.statuses.filter(track=keyword_list)

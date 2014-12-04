@@ -71,22 +71,22 @@ def matchWords(c, tweet_list):
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:
-        print "I need a percentage (number between 0 and 1) as an argument"
+        print ("I need a percentage (number between 0 and 1) as an argument")
         sys.exit()
         
 
     conn = sqlite3.connect('db/tweetBank.db')
     c = conn.cursor()
 
-    print "Reading tweets from the database..."
+    print ("Reading tweets from the database...")
 
     tweet_list = readTweets(c, sys.argv[1])
 
-    print "Reading words from the database..."
+    print ("Reading words from the database...")
 
     word_matrix = matchWords(c, tweet_list)
 
-    print "Creating the graph..."
+    print ("Creating the graph...")
 
     graph = nx.Graph()
     edge_labels = {}
