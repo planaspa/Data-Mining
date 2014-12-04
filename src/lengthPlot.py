@@ -48,8 +48,17 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
     # Minimum 7 to avoid seeing the points of 0 retweets and a little bit more in the max
-    ax.plot(range(141), rtsAverage, alpha=0.5, label='averageRts', color='green')
-    ax.plot(range(141), favsAverage, alpha=0.5, label='averageFavs', color='orange')
+    plt.xlabel("Number of characters in a tweet")
+    plt.ylabel("Average of interactions")
+    lineRts, = ax.plot(range(141), rtsAverage, alpha=0.5, label='average Rts', color='green')
+    lineFavs, = ax.plot(range(141), favsAverage, alpha=0.5, label='average Favs', color='orange')
+    first_legend = plt.legend(handles=[lineRts,lineFavs], loc=1)
+    ax = plt.gca().add_artist(first_legend)
+
     fig2, ax2 = plt.subplots()
-    ax2.plot(range(141), numberOfTweet, alpha=0.5, label='amountOfTweets')
+    line, = ax2.plot(range(141), numberOfTweet, alpha=0.5, label='amountOfTweets')
+    plt.xlabel("Number of characters in a tweet")
+    plt.ylabel("Amount of tweets gathered")
+    second_legend = plt.legend(handles=[line], loc=1)
+    ax2 = plt.gca().add_artist(second_legend)
     plt.show()
