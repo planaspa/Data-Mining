@@ -10,5 +10,5 @@
 ],
 "git": "git@github.com:planaspa/Data-Mining.git", 
 "description": "This project will involve crawling, downloading and extraction of tweets from Twitter which contains the word or hashtag Beer, in order to find which topics or words are correlated between all of these tweets all around the globe.",
-"modules": ["twitter", "json"]
+"modules": ["twitter", "json", "numpy", "six", "twython", "pytz", "tornado", "pyparsing", "matplotlib", "networkx"]
 }
