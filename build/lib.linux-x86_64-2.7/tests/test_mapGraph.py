@@ -1,11 +1,11 @@
-from pytest import raises
+# pyflakes.ignore
 from src.mapGraph import *
 
 db = 'db/test.db'
 
+
 def test_loadDataEmptyDatabase():
     conn = sqlite3.connect(db)
-    c = conn.cursor()
 
     coordinates = loadData(conn)
     # Closing the connection
@@ -13,6 +13,7 @@ def test_loadDataEmptyDatabase():
     assert len(coordinates) == 2
     assert len(coordinates[0]) == 0
     assert len(coordinates[1]) == 0
+
 
 def test_loadDataWithData():
     conn = sqlite3.connect(db)
@@ -34,4 +35,3 @@ def test_loadDataWithData():
     assert len(coordinates) == 2
     assert coordinates[0] == [-5.6]
     assert coordinates[1] == [6.12]
-    

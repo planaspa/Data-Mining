@@ -44,9 +44,9 @@ def test_bound():
 
     c = conn.cursor()
 
-    bound0 = round(bound(c, "0.3"), 1)
-    bound1 = bound(c, "0")
-    bound2 = bound(c, "1")
+    bound0 = round(bound(c, "0.7"), 1)
+    bound1 = bound(c, "1")
+    bound2 = bound(c, "0")
 
     conn.execute("DELETE FROM TWEETS WHERE ID=0")
     conn.execute("DELETE FROM TWEETS WHERE ID=1")
@@ -83,9 +83,9 @@ def test_readTweets():
 
     c = conn.cursor()
 
-    tweet_list0 = readTweets(c, "1")
-    tweet_list1 = readTweets(c, "0")
-    tweet_list2 = readTweets(c, "0.7")
+    tweet_list0 = readTweets(c, "0")
+    tweet_list1 = readTweets(c, "1")
+    tweet_list2 = readTweets(c, "0.3")
 
     conn.execute("DELETE FROM TWEETS WHERE ID=0")
     conn.execute("DELETE FROM TWEETS WHERE ID=1")

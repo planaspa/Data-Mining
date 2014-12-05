@@ -1,12 +1,13 @@
-from pytest import raises
 from src.graphDb import *
 
 db = 'db/test.db'
+
 
 def test_text_format():
     assert text_format("asdkjhaeih") == "asdkjhaeih"
     assert text_format("as&amp;dkj&gt;hae&lt;ih") == "as&dkj>hae<ih"
     assert text_format("") == ""
+
 
 def test_creatingGroups():
 
@@ -34,8 +35,9 @@ def test_creatingGroups():
     # Closing the connection
     conn.close()
 
-    assert groups1 == [5,55,105]
-    assert groups2 == [5,30,55,80,105]
+    assert groups1 == [5, 55, 105]
+    assert groups2 == [5, 30, 55, 80, 105]
+
 
 def test_numberOfTweetsPerGroup():
 
@@ -66,8 +68,9 @@ def test_numberOfTweetsPerGroup():
     # Closing the connection
     conn.close()
 
-    assert tweetsPerGroup1 == [1,1]
-    assert tweetsPerGroup2 == [1,0,0,1]
+    assert tweetsPerGroup1 == [1, 1]
+    assert tweetsPerGroup2 == [1, 0, 0, 1]
+
 
 def test_numberOfReTweetsPerGroup():
 
@@ -98,8 +101,9 @@ def test_numberOfReTweetsPerGroup():
     # Closing the connection
     conn.close()
 
-    assert rtsPerGroup1 == [3,5]
-    assert rtsPerGroup2 == [3,0,0,5]
+    assert rtsPerGroup1 == [3, 5]
+    assert rtsPerGroup2 == [3, 0, 0, 5]
+
 
 def test_numberOfFavsPerGroup():
 
@@ -130,5 +134,5 @@ def test_numberOfFavsPerGroup():
     # Closing the connection
     conn.close()
 
-    assert favsPerGroup1 == [3,5]
-    assert favsPerGroup2 == [3,0,0,5]
+    assert favsPerGroup1 == [3, 5]
+    assert favsPerGroup2 == [3, 0, 0, 5]

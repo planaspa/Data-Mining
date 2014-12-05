@@ -1,16 +1,27 @@
-from pytest import raises
 from src.dbCreator import *
+import pytest
 import os
 
 db = 'db/test.db'
 
+
+@pytest.mark.order1
+def test_removeDB():
+    """
+    This method is not in the original module. But it is neccesary
+    if we want to remove the db for the followings tests.
+    """
+    os.remove(db)
+
+
+@pytest.mark.order2
 def test_tweetsTableCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     tweetsTableCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master "
-            "WHERE type = 'table' and name = 'TWEETS'")
+    c.execute("SELECT count(*) FROM sqlite_master "
+              "WHERE type = 'table' and name = 'TWEETS'")
 
     result = c.fetchone()
 
@@ -19,13 +30,14 @@ def test_tweetsTableCreator():
     assert result[0] == 1
 
 
+@pytest.mark.order3
 def test_usersTableCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     usersTableCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master "
-            "WHERE type = 'table' and name = 'USERS'")
+    c.execute("SELECT count(*) FROM sqlite_master "
+              "WHERE type = 'table' and name = 'USERS'")
 
     result = c.fetchone()
 
@@ -34,13 +46,14 @@ def test_usersTableCreator():
     assert result[0] == 1
 
 
+@pytest.mark.order4
 def test_timeTableCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     timeTableCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master "
-            "WHERE type = 'table' and name = 'TIME'")
+    c.execute("SELECT count(*) FROM sqlite_master "
+              "WHERE type = 'table' and name = 'TIME'")
 
     result = c.fetchone()
 
@@ -49,13 +62,14 @@ def test_timeTableCreator():
     assert result[0] == 1
 
 
+@pytest.mark.order5
 def test_hashtagsTableCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     hashtagsTableCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master "
-            "WHERE type = 'table' and name = 'HASHTAGS'")
+    c.execute("SELECT count(*) FROM sqlite_master "
+              "WHERE type = 'table' and name = 'HASHTAGS'")
 
     result = c.fetchone()
 
@@ -64,13 +78,14 @@ def test_hashtagsTableCreator():
     assert result[0] == 1
 
 
+@pytest.mark.order6
 def test_urlsTableCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     urlsTableCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master "
-            "WHERE type = 'table' and name = 'URLS'")
+    c.execute("SELECT count(*) FROM sqlite_master "
+              "WHERE type = 'table' and name = 'URLS'")
 
     result = c.fetchone()
 
@@ -79,13 +94,14 @@ def test_urlsTableCreator():
     assert result[0] == 1
 
 
+@pytest.mark.order7
 def test_wordTableCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     wordTableCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master "
-            "WHERE type = 'table' and name = 'WORDS'")
+    c.execute("SELECT count(*) FROM sqlite_master "
+              "WHERE type = 'table' and name = 'WORDS'")
 
     result = c.fetchone()
 
@@ -94,13 +110,14 @@ def test_wordTableCreator():
     assert result[0] == 1
 
 
+@pytest.mark.order8
 def test_producesTableCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     producesTableCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master "
-            "WHERE type = 'table' and name = 'PRODUCES'")
+    c.execute("SELECT count(*) FROM sqlite_master "
+              "WHERE type = 'table' and name = 'PRODUCES'")
 
     result = c.fetchone()
 
@@ -108,13 +125,15 @@ def test_producesTableCreator():
     conn.close()
     assert result[0] == 1
 
+
+@pytest.mark.order9
 def test_mentionsTableCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     mentionsTableCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master "
-            "WHERE type = 'table' and name = 'MENTIONS'")
+    c.execute("SELECT count(*) FROM sqlite_master "
+              "WHERE type = 'table' and name = 'MENTIONS'")
 
     result = c.fetchone()
 
@@ -122,26 +141,18 @@ def test_mentionsTableCreator():
     conn.close()
     assert result[0] == 1
 
+
+@pytest.mark.order10
 def test_indexCreator():
     conn = sqlite3.connect(db)
     c = conn.cursor()
 
     indexCreator(conn)
-    c.execute ("SELECT count(*) FROM sqlite_master"
-            " WHERE type = 'index' and name = 'GEO'")
+    c.execute("SELECT count(*) FROM sqlite_master"
+              " WHERE type = 'index' and name = 'GEO'")
 
     result = c.fetchone()
 
     # Closing the connection
     conn.close()
     assert result[0] == 1
-
-
-#def test_removeDB():
-    """
-    This method is not in the original module. But it is neccesary 
-    if we want to remove the db for the followings tests.
-    """
- #   os.remove(db)
-
-
