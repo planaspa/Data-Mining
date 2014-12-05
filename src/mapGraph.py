@@ -7,16 +7,17 @@ This script generates a map with the geo location of the tweeters
 iformation gathered in our database.
 """
 
+
 def loadData(conn):
     c = conn.cursor()
-    print ("Reading from the database...") 
+    print ("Reading from the database...")
 
     # We select all the tweets with geo position information in the db
     c.execute("SELECT LAT, LONG FROM TWEETS WHERE LAT IS NOT NULL "
-              + "AND LONG IS NOT NULL");
+              + "AND LONG IS NOT NULL")
 
     cursor = list(c)
-    lats  = [record[0] for record in cursor]
+    lats = [record[0] for record in cursor]
     longs = [record[1] for record in cursor]
     return [lats, longs]
 
@@ -42,7 +43,7 @@ if __name__ == "__main__":
     # Intermediate resolution
     # Cylindrical Equidistant projection
     m = Basemap(projection='cyl', resolution='i')
-    # Display shaded relief image (from http://www.shadedrelief.com) 
+    # Display shaded relief image (from http://www.shadedrelief.com)
     # as map background
     m.shadedrelief()
     x, y = m(longs, lats)

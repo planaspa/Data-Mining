@@ -3,6 +3,7 @@ import sys
 
 verbose = False
 
+
 def tweetsTableCreator(conn):
     # Creating main tables
     conn.execute('''CREATE TABLE TWEETS
@@ -17,6 +18,7 @@ def tweetsTableCreator(conn):
     if verbose:
         print ("Table Tweets created successfully")
 
+
 def usersTableCreator(conn):
     # If verified equals to one means it is true, zero means it is false
     conn.execute('''CREATE TABLE USERS
@@ -28,6 +30,7 @@ def usersTableCreator(conn):
 
     if verbose:
         print ("Table Users created successfully")
+
 
 def timeTableCreator(conn):
     # Table for tweets timing
@@ -44,6 +47,7 @@ def timeTableCreator(conn):
     if verbose:
         print ("Table Time created successfully")
 
+
 def hashtagsTableCreator(conn):
     # Creating tables for multivaluated attributes for some tables
     conn.execute('''CREATE TABLE HASHTAGS
@@ -55,6 +59,7 @@ def hashtagsTableCreator(conn):
     if verbose:
         print ("Table Hashtags created successfully")
 
+
 def urlsTableCreator(conn):
     conn.execute('''CREATE TABLE URLS
         (URL TEXT NOT NULL,
@@ -65,6 +70,7 @@ def urlsTableCreator(conn):
     if verbose:
         print ("Table Hashtags created successfully")
 
+
 def wordTableCreator(conn):
     conn.execute('''CREATE TABLE WORDS
         (WORD TEXT NOT NULL COLLATE NOCASE,
@@ -74,6 +80,7 @@ def wordTableCreator(conn):
 
     if verbose:
         print ("Table Words created successfully")
+
 
 def producesTableCreator(conn):
     # PRODUCES --> A user produces many tweets
@@ -87,6 +94,7 @@ def producesTableCreator(conn):
     if verbose:
         print ("Table Produces created successfully")
 
+
 def mentionsTableCreator(conn):
     # MENTIONS --> A tweet mentions many users
     conn.execute('''CREATE TABLE MENTIONS
@@ -99,12 +107,14 @@ def mentionsTableCreator(conn):
     if verbose:
         print ("Table Mentions created successfully")
 
+
 def indexCreator(conn):
     # Index to search easily by geo-position
     conn.execute("CREATE INDEX GEO ON TWEETS(LAT, LONG);")
 
     if verbose:
         print ("Index GEO created successfully")
+
 
 if __name__ == "__main__":
 
@@ -114,7 +124,8 @@ if __name__ == "__main__":
         print ("Verbose mode ON.")
     else:
         verbose = False
-        print ("Verbose mode OFF. To activate it use -v parametter when excecuting")
+        print ("Verbose mode OFF. To activate it use "
+               "-v parametter when excecuting")
 
     # Connection to DataBase
     con = sqlite3.connect('db/tweetBank.db')

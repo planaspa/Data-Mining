@@ -132,7 +132,7 @@ class MyStreamer(TwythonStreamer):
         # We avoid repeated mentions
         mentions = []
         [mentions.append(mention['id'])
-         for mention in data['entities']['user_mentions'] 
+         for mention in data['entities']['user_mentions']
          if mention['id'] not in mentions]
 
         for user in mentions:
@@ -141,7 +141,7 @@ class MyStreamer(TwythonStreamer):
 
     def insert_Hashtags(self, data):
         # We avoid repeated hashtags
-        hashtags =[]
+        hashtags = []
         [hashtags.append(hashtag['text'].lower())
          for hashtag in data['entities']['hashtags']
          if hashtag['text'].lower() not in hashtags]
@@ -178,7 +178,7 @@ class MyStreamer(TwythonStreamer):
 
         # Compute a collection of all words from the tweet in lowercase
         words = [self.text_format(w).lower()
-                 for w in text.split() if w.lower() not in junkWords 
+                 for w in text.split() if w.lower() not in junkWords
                  and w not in urls]
 
         # We avoid inserting repeated words in the same tweet
@@ -235,14 +235,13 @@ if __name__ == "__main__":
         print "Verbose mode ON"
     else:
         verbose = False
-        print "Verbose mode OFF. To activate it use -v parametter when excecuting"
-
+        print ("Verbose mode OFF. To activate it use -v "
+               "parametter when excecuting")
 
     # Connection to DataBase
     conn = sqlite3.connect('db/tweetBank.db')
     if verbose:
         print "Opened database successfully"
-
 
     stream = MyStreamer(keys.CONSUMER_KEY, keys.CONSUMER_SECRET,
                         keys.OAUTH_TOKEN, keys.OAUTH_TOKEN_SECRET)
