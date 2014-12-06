@@ -7,7 +7,7 @@ Usage
 
 Select the name of the script to execute
 Use setup.py test to test the files
-.. code::
+.. code:: python
 
     python src/<file>
     python setup.py test
